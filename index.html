@@ -32,7 +32,7 @@
       font-family:var(--sans);
       padding:24px;
     }
-    .wrap{max-width:1100px;margin:0 auto}
+    .wrap{max-width:1200px;margin:0 auto}
     header{
       display:flex;gap:14px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;
       margin-bottom:16px;
@@ -53,16 +53,13 @@
     .toolbar{
       display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:flex-end;
     }
-    button, input, select{
-      font-family:inherit;
-    }
+    button, input, select{font-family:inherit;}
     .btn{
       border:1px solid var(--line);
       background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
       color:var(--text);
       padding:10px 12px;border-radius:12px;
       cursor:pointer;
-      box-shadow: none;
       transition:.15s ease;
       font-size:13px;
     }
@@ -76,9 +73,8 @@
       border-color: rgba(255,107,107,.35);
       background: linear-gradient(180deg, rgba(255,107,107,.16), rgba(255,107,107,.08));
     }
-    .btn.ghost{
-      background: transparent;
-    }
+    .btn.ghost{background: transparent;}
+
     .panel{
       background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.015));
       border:1px solid var(--line);
@@ -108,11 +104,7 @@
     }
     .field input::placeholder{color:#667189}
 
-    table{
-      width:100%;
-      border-collapse:separate;
-      border-spacing:0;
-    }
+    table{width:100%; border-collapse:separate; border-spacing:0;}
     thead th{
       text-align:left;
       font-size:12px;
@@ -129,16 +121,13 @@
       border-bottom:1px solid rgba(35,42,54,.7);
       vertical-align:middle;
     }
-    tbody tr{
-      background: rgba(255,255,255,.01);
-      transition:.12s ease;
-    }
-    tbody tr:hover{
-      background: rgba(122,162,255,.06);
-    }
+    tbody tr{background: rgba(255,255,255,.01); transition:.12s ease;}
+    tbody tr:hover{background: rgba(122,162,255,.06);}
 
     .col-check{width:44px}
-    .col-time{width:110px;font-family:var(--mono)}
+    .col-time{width:120px;font-family:var(--mono)}
+    .col-end{width:120px;font-family:var(--mono)}
+    .col-range{width:190px;font-family:var(--mono)}
     .col-dur{width:120px}
     .col-tag{width:140px}
     .col-actions{width:190px;text-align:right}
@@ -170,6 +159,7 @@
       background: rgba(0,0,0,.18);
       color:var(--text);
       outline:none;
+      font-family:var(--mono);
     }
     .chip{
       display:inline-flex;align-items:center;gap:8px;
@@ -188,9 +178,7 @@
     .dot.admin{background:#93c5fd}
     .dot.rest{background:#9ca3af}
     .rowBtns{display:inline-flex;gap:8px}
-    .mini{
-      padding:8px 10px;border-radius:10px;font-size:12px;
-    }
+    .mini{padding:8px 10px;border-radius:10px;font-size:12px;}
     .drag{
       cursor:grab;
       display:inline-flex;align-items:center;gap:8px;
@@ -199,9 +187,7 @@
       user-select:none;
     }
     .drag:active{cursor:grabbing}
-    .kpi{
-      display:flex;gap:10px;flex-wrap:wrap;align-items:center
-    }
+    .kpi{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
     .kpi .pill{background: rgba(0,0,0,.18)}
     .footer{
       padding:12px 14px;
@@ -223,11 +209,23 @@
     .sr-only{
       position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0;
     }
-    @media (max-width: 820px){
+    .rangeBadge{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:7px 10px;border-radius:999px;
+      border:1px solid rgba(122,162,255,.25);
+      background: rgba(122,162,255,.08);
+      color: var(--text);
+      white-space:nowrap;
+      font-size:12px;
+    }
+    .rangeBadge .mutedMini{color:rgba(232,238,247,.75)}
+    @media (max-width: 980px){
       body{padding:14px}
       .col-actions{width:auto}
       thead th.col-actions{display:none}
       tbody td.col-actions{display:none}
+      .col-range{display:none}
+      thead th.col-range{display:none}
     }
   </style>
 </head>
@@ -238,7 +236,7 @@
     <div class="title">
       <h1>Agenda — Planner Diário</h1>
       <div class="sub">
-        Edite, adicione e reorganize seus blocos. Tudo fica salvo automaticamente no seu navegador (localStorage).
+        Edite os blocos como rotina real: início, fim e duração. Tudo salva automaticamente no seu navegador (localStorage).
       </div>
       <div class="pillrow kpi" id="kpiRow">
         <div class="pill">Total de blocos: <strong id="kpiBlocks">0</strong></div>
@@ -296,7 +294,9 @@
         <thead>
           <tr>
             <th class="col-check">✓</th>
-            <th class="col-time">Horário</th>
+            <th class="col-time">Início</th>
+            <th class="col-end">Fim</th>
+            <th class="col-range">Intervalo</th>
             <th>Atividade</th>
             <th class="col-dur">Duração</th>
             <th class="col-tag">Categoria</th>
@@ -310,11 +310,9 @@
 
     <div class="footer">
       <div class="note">
-        Dica: arraste o ícone “⠿” para reordenar manualmente (ou use “Ordenar por horário”).
+        Dica: edite “Início + Duração” (ele calcula o fim) ou “Início + Fim” (ele calcula a duração). Arraste “⠿” para reordenar.
       </div>
-      <div class="note">
-        ⌘/Ctrl + S não é necessário — tudo salva automaticamente.
-      </div>
+      <div class="note">Tudo salva automaticamente.</div>
     </div>
   </div>
 </div>
@@ -323,10 +321,10 @@
 
 <script>
 (() => {
-  const STORAGE_KEY = "agenda_planner_v1";
+  const STORAGE_KEY = "agenda_planner_v2"; // nova versão (mantém v1 intacto)
+  const LEGACY_KEY = "agenda_planner_v1";  // migração automática
   const DEFAULT_WEEK = "Minha Semana";
 
-  // ---------- Helpers ----------
   const $ = (sel) => document.querySelector(sel);
   const uid = () => Math.random().toString(16).slice(2) + Date.now().toString(16);
 
@@ -346,10 +344,8 @@
     const s = String(v).trim().toLowerCase();
     if(!s) return 0;
 
-    // if just digits => minutes
     if(/^\d+$/.test(s)) return parseInt(s,10);
 
-    // 1h20 / 1h / 2h05
     let m = s.match(/^(\d+)\s*h\s*(\d+)?/);
     if(m){
       const h = parseInt(m[1],10);
@@ -357,13 +353,11 @@
       return h*60 + min;
     }
 
-    // 1:20
     m = s.match(/^(\d+)\s*:\s*(\d+)$/);
     if(m){
       return parseInt(m[1],10)*60 + parseInt(m[2],10);
     }
 
-    // 45min
     m = s.match(/^(\d+)\s*min/);
     if(m) return parseInt(m[1],10);
 
@@ -377,10 +371,10 @@
   }
 
   function timeToMinutes(t){
-    if(!t) return 0;
+    if(!t) return null;
     const s = String(t).trim();
     const m = s.match(/^(\d{1,2}):(\d{2})$/);
-    if(!m) return 0;
+    if(!m) return null;
     return parseInt(m[1],10)*60 + parseInt(m[2],10);
   }
 
@@ -388,6 +382,61 @@
     const h = Math.floor(mins/60) % 24;
     const m = mins % 60;
     return `${pad2(h)}:${pad2(m)}`;
+  }
+
+  // diferença entre start e end (assume que no máximo atravessa meia-noite uma vez)
+  function diffMinutes(startMin, endMin){
+    if(startMin == null || endMin == null) return 0;
+    let d = endMin - startMin;
+    if(d < 0) d += 24*60;
+    return d;
+  }
+
+  function calcEndFromStartDur(start, durStr){
+    const sMin = timeToMinutes(start);
+    const dMin = parseDurationToMinutes(durStr);
+    if(sMin == null || dMin <= 0) return "";
+    return minutesToTime(sMin + dMin);
+  }
+
+  function normalizeTime(val){
+    const s = String(val||"").trim();
+    if(!s) return "";
+    if(/^\d{3,4}$/.test(s)){
+      const p = s.padStart(4,"0");
+      const hh = p.slice(0,2), mm = p.slice(2);
+      const h = Math.min(23, Math.max(0, parseInt(hh,10)));
+      const m = Math.min(59, Math.max(0, parseInt(mm,10)));
+      return `${pad2(h)}:${pad2(m)}`;
+    }
+    const m = s.match(/^(\d{1,2})\s*[:h]\s*(\d{1,2})$/i);
+    if(m){
+      const h = Math.min(23, Math.max(0, parseInt(m[1],10)));
+      const mi = Math.min(59, Math.max(0, parseInt(m[2],10)));
+      return `${pad2(h)}:${pad2(mi)}`;
+    }
+    const ok = s.match(/^\d{1,2}:\d{2}$/);
+    if(ok){
+      const [hh,mm] = s.split(":");
+      const h = Math.min(23, Math.max(0, parseInt(hh,10)));
+      const mi = Math.min(59, Math.max(0, parseInt(mm,10)));
+      return `${pad2(h)}:${pad2(mi)}`;
+    }
+    return s;
+  }
+
+  function normalizeDuration(val){
+    const s = String(val||"").trim();
+    if(!s) return "";
+    const mins = parseDurationToMinutes(s);
+    if(mins > 0 && mins < 60) return String(mins);
+    if(mins > 0){
+      const h = Math.floor(mins/60);
+      const m = mins%60;
+      if(m===0) return `${h}h`;
+      return `${h}h${pad2(m)}`;
+    }
+    return s;
   }
 
   function tagDotClass(tag){
@@ -402,31 +451,28 @@
     }
   }
 
-  // ---------- Data model ----------
-  // data = { weekName, days: { "Segunda": [items], ... } }
-  // item = {id, done, time, activity, duration, tag, task, order}
   const dayNames = ["Segunda","Terça","Quarta","Quinta","Sexta","Sábado","Domingo"];
 
   function defaultData(){
-    // Modelo inspirado na sua imagem (editável)
     const base = [
-      {time:"06:00", activity:"Acordar", duration:"", tag:"Vida", task:"", done:false},
-      {time:"06:25", activity:"Bíblia", duration:"15", tag:"Vida", task:"", done:false},
-      {time:"07:20", activity:"Café da Manhã", duration:"60", tag:"Vida", task:"", done:false},
-      {time:"08:00", activity:"Faculdade", duration:"600", tag:"Faculdade", task:"Aulas / campus", done:false},
-      {time:"18:00", activity:"Retorno Faculdade", duration:"", tag:"Vida", task:"", done:false},
-      {time:"18:40", activity:"Lanche Tarde", duration:"30", tag:"Vida", task:"", done:false},
-      {time:"19:00", activity:"Academia", duration:"60", tag:"Saúde", task:"Treino", done:false},
-      {time:"20:00", activity:"Retorno Academia", duration:"", tag:"Vida", task:"", done:false},
-      {time:"21:00", activity:"Janta e Banho", duration:"60", tag:"Vida", task:"", done:false},
-      {time:"21:10", activity:"Inglês", duration:"120", tag:"Estudo", task:"TOEIC / inglês aula", done:false},
-      {time:"23:10", activity:"Término", duration:"25", tag:"Descanso", task:"Desacelerar + dormir", done:false},
+      {start:"06:00", end:"", activity:"Acordar + higiene", duration:"15", tag:"Vida", task:"Escovar dentes, água, acordar", done:false},
+      {start:"06:15", end:"", activity:"TOEIC (PESADO)", duration:"1h30", tag:"Estudo", task:"Parte 7 cronometrada + marcar erros", done:false},
+      {start:"07:45", end:"", activity:"FOCO (PESADO)", duration:"1h00", tag:"Faculdade", task:"Projeto/revisão/prioridade do dia", done:false},
+      {start:"08:45", end:"10:00", activity:"PARAR TUDO", duration:"", tag:"Vida", task:"Café + roupa + ir pra aula", done:false},
+      {start:"10:00", end:"18:00", activity:"Faculdade", duration:"", tag:"Faculdade", task:"Aulas / campus", done:false},
+      {start:"18:30", end:"", activity:"Lanche leve", duration:"30", tag:"Vida", task:"Lanche rápido + reset", done:false},
+      {start:"19:00", end:"", activity:"Academia", duration:"1h15", tag:"Saúde", task:"Treino", done:false},
+      {start:"20:15", end:"", activity:"Banho + Jantar", duration:"30", tag:"Vida", task:"Banho + refeição leve", done:false},
+      {start:"20:45", end:"", activity:"FOCO (MÉDIO)", duration:"1h20", tag:"Faculdade", task:"Tarefas / adiantar trabalho", done:false},
+      {start:"22:05", end:"", activity:"FOCO (LEVE)", duration:"20", tag:"Estudo", task:"Francês funcional OU Anki", done:false},
+      {start:"22:25", end:"22:45", activity:"Desacelerar", duration:"", tag:"Descanso", task:"Sem telas fortes → dormir", done:false},
     ];
 
     const mk = (arr) => arr.map((x,i)=>({
       id: uid(),
       done: !!x.done,
-      time: x.time || "",
+      start: x.start || "",
+      end: x.end || "",
       activity: x.activity || "",
       duration: x.duration || "",
       tag: x.tag || "Estudo",
@@ -435,19 +481,57 @@
     }));
 
     const days = {};
-    for(const d of dayNames){
-      days[d] = mk(base);
-    }
+    for(const d of dayNames) days[d] = mk(base);
     return { weekName: DEFAULT_WEEK, days };
   }
+
+  function migrateFromV1IfNeeded(){
+    const hasV2 = !!localStorage.getItem(STORAGE_KEY);
+    if(hasV2) return;
+
+    const legacy = localStorage.getItem(LEGACY_KEY);
+    if(!legacy) return;
+
+    try{
+      const parsed = JSON.parse(legacy);
+      if(!parsed?.days) return;
+
+      // Convert v1 items: time -> start; duration stays; end computed
+      for(const d of dayNames){
+        const arr = Array.isArray(parsed.days[d]) ? parsed.days[d] : [];
+        parsed.days[d] = arr.map((it,i)=> {
+          const start = normalizeTime(it.time || "");
+          const duration = it.duration || "";
+          const end = (it.end && it.end.trim()) ? normalizeTime(it.end) : calcEndFromStartDur(start, duration);
+          return {
+            id: it.id || uid(),
+            done: !!it.done,
+            start,
+            end: end || "",
+            activity: it.activity || "",
+            duration: duration || "",
+            tag: it.tag || "Estudo",
+            task: it.task || "",
+            order: (typeof it.order === "number") ? it.order : i
+          };
+        });
+      }
+      parsed.weekName = parsed.weekName || DEFAULT_WEEK;
+
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
+      showToast("Dados antigos importados (v1 → v2)");
+    }catch(e){
+      // ignore
+    }
+  }
+
+  migrateFromV1IfNeeded();
 
   function load(){
     try{
       const raw = localStorage.getItem(STORAGE_KEY);
       if(!raw) return defaultData();
       const parsed = JSON.parse(raw);
-
-      // basic sanity
       if(!parsed.days) return defaultData();
       for(const d of dayNames){
         if(!Array.isArray(parsed.days[d])) parsed.days[d] = [];
@@ -459,14 +543,14 @@
     }
   }
 
+  let state = load();
+
   function save(){
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     updateKPIs();
   }
 
-  let state = load();
-
-  // ---------- UI init ----------
+  // UI init
   const daySelect = $("#daySelect");
   const weekNameInput = $("#weekName");
   const tbody = $("#tbody");
@@ -479,31 +563,26 @@
     daySelect.appendChild(opt);
   });
 
-  // pick today-ish (Mon=1...Sun=0 in JS getDay)
   const jsDay = new Date().getDay();
   const map = {0:"Domingo",1:"Segunda",2:"Terça",3:"Quarta",4:"Quinta",5:"Sexta",6:"Sábado"};
   daySelect.value = map[jsDay] || "Segunda";
-
   weekNameInput.value = state.weekName || DEFAULT_WEEK;
 
-  // ---------- Rendering ----------
-  function currentDay(){
-    return daySelect.value;
-  }
+  function currentDay(){ return daySelect.value; }
 
   function getVisibleItems(){
     const items = state.days[currentDay()] || [];
     const q = searchInput.value.trim().toLowerCase();
     const tag = filterTag.value;
 
-    // stable ordering by item.order (manual), then time
     let sorted = [...items].sort((a,b)=> (a.order ?? 0) - (b.order ?? 0));
 
     if(q){
       sorted = sorted.filter(it =>
         (it.activity||"").toLowerCase().includes(q) ||
         (it.task||"").toLowerCase().includes(q) ||
-        (it.time||"").toLowerCase().includes(q) ||
+        (it.start||"").toLowerCase().includes(q) ||
+        (it.end||"").toLowerCase().includes(q) ||
         (it.tag||"").toLowerCase().includes(q)
       );
     }
@@ -513,11 +592,66 @@
     return sorted;
   }
 
+  function escapeHtml(s){
+    return String(s ?? "")
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;")
+      .replaceAll("'","&#039;");
+  }
+
+  function computeRangeText(it){
+    const s = normalizeTime(it.start || "");
+    const e = normalizeTime(it.end || "");
+    let durMin = parseDurationToMinutes(it.duration || "");
+
+    // if no duration but we have start+end -> compute
+    if(durMin <= 0){
+      const sMin = timeToMinutes(s);
+      const eMin = timeToMinutes(e);
+      if(sMin != null && eMin != null){
+        durMin = diffMinutes(sMin, eMin);
+      }
+    }
+
+    const durTxt = durMin > 0 ? minutesToHMM(durMin) : "—";
+    const range = (s && e) ? `${s}–${e}` : (s ? `${s}–…` : "—");
+    return { range, durTxt };
+  }
+
+  function syncTimesFromDuration(it){
+    it.start = normalizeTime(it.start);
+    it.duration = normalizeDuration(it.duration);
+
+    // if start + duration => set end
+    const e = calcEndFromStartDur(it.start, it.duration);
+    if(e) it.end = e;
+  }
+
+  function syncDurationFromEnd(it){
+    it.start = normalizeTime(it.start);
+    it.end = normalizeTime(it.end);
+
+    const sMin = timeToMinutes(it.start);
+    const eMin = timeToMinutes(it.end);
+    if(sMin == null || eMin == null) return;
+
+    const dMin = diffMinutes(sMin, eMin);
+    it.duration = normalizeDuration(String(dMin)); // store as h/min format
+  }
+
   function render(){
     const items = getVisibleItems();
     tbody.innerHTML = "";
 
-    items.forEach((it, idx) => {
+    items.forEach((it) => {
+      // normalize on render (safe)
+      it.start = normalizeTime(it.start || "");
+      it.end = normalizeTime(it.end || "");
+
+      const { range, durTxt } = computeRangeText(it);
+
       const tr = document.createElement("tr");
       tr.draggable = true;
       tr.dataset.id = it.id;
@@ -530,16 +664,27 @@
         <td class="col-time">
           <div style="display:flex;align-items:center;gap:10px">
             <span class="drag" title="Arraste para reordenar">⠿</span>
-            <input class="timeInput" type="text" inputmode="numeric" placeholder="08:00" value="${escapeHtml(it.time)}" />
+            <input class="timeInput startInput" type="text" inputmode="numeric" placeholder="08:00" value="${escapeHtml(it.start)}" />
           </div>
         </td>
 
+        <td class="col-end">
+          <input class="timeInput endInput" type="text" inputmode="numeric" placeholder="09:30" value="${escapeHtml(it.end)}" />
+        </td>
+
+        <td class="col-range">
+          <span class="rangeBadge">
+            <span>${escapeHtml(range)}</span>
+            <span class="mutedMini">(${escapeHtml(durTxt)})</span>
+          </span>
+        </td>
+
         <td>
-          <input class="textInput" type="text" placeholder="Ex: Academia / TOEIC / Faculdade..." value="${escapeHtml(it.activity)}" />
+          <input class="textInput actInput" type="text" placeholder="Ex: TOEIC / Academia / Faculdade..." value="${escapeHtml(it.activity)}" />
         </td>
 
         <td class="col-dur">
-          <input class="durInput" type="text" placeholder="ex: 60 / 1h20" value="${escapeHtml(it.duration)}" />
+          <input class="durInput durInputEl" type="text" placeholder="ex: 60 / 1h20" value="${escapeHtml(it.duration)}" />
         </td>
 
         <td class="col-tag">
@@ -563,36 +708,61 @@
         </td>
       `;
 
-      // Events
       const checkbox = tr.querySelector('input[type="checkbox"]');
-      const timeInput = tr.querySelector(".timeInput");
-      const actInput = tr.querySelectorAll(".textInput")[0];
-      const durInput = tr.querySelector(".durInput");
+      const startInput = tr.querySelector(".startInput");
+      const endInput = tr.querySelector(".endInput");
+      const actInput = tr.querySelector(".actInput");
+      const durInput = tr.querySelector(".durInputEl");
       const tagSelectEl = tr.querySelector(".tagSelect");
       const taskInput = tr.querySelector(".taskInput");
 
       checkbox.addEventListener("change", () => {
         it.done = checkbox.checked;
         save();
-        render(); // to update KPIs quickly
+        render();
       });
 
-      timeInput.addEventListener("change", () => {
-        it.time = normalizeTime(timeInput.value);
-        timeInput.value = it.time;
+      startInput.addEventListener("change", () => {
+        it.start = normalizeTime(startInput.value);
+        startInput.value = it.start;
+
+        // prioridade: se tem duration -> recalcula end; senão se tem end -> recalcula duration
+        if(parseDurationToMinutes(it.duration) > 0){
+          syncTimesFromDuration(it);
+        }else if(it.end){
+          syncDurationFromEnd(it);
+        }
         save();
+        render();
       });
 
-      actInput.addEventListener("input", () => {
-        it.activity = actInput.value;
-        saveDebounced();
+      endInput.addEventListener("change", () => {
+        it.end = normalizeTime(endInput.value);
+        endInput.value = it.end;
+
+        // se start + end => recalcula duration
+        if(it.start && it.end){
+          syncDurationFromEnd(it);
+        }
+        save();
+        render();
       });
 
       durInput.addEventListener("change", () => {
         it.duration = normalizeDuration(durInput.value);
         durInput.value = it.duration;
+
+        // se start + duration => recalcula end
+        if(it.start && parseDurationToMinutes(it.duration) > 0){
+          syncTimesFromDuration(it);
+        }
         save();
-        updateKPIs();
+        render();
+      });
+
+      actInput.addEventListener("input", () => {
+        it.activity = actInput.value;
+        saveDebounced();
       });
 
       tagSelectEl.addEventListener("change", () => {
@@ -606,29 +776,21 @@
         saveDebounced();
       });
 
-      tr.querySelector('[data-act="del"]').addEventListener("click", () => {
-        deleteItem(it.id);
-      });
-      tr.querySelector('[data-act="dup"]').addEventListener("click", () => {
-        duplicateItem(it.id);
-      });
+      tr.querySelector('[data-act="del"]').addEventListener("click", () => deleteItem(it.id));
+      tr.querySelector('[data-act="dup"]').addEventListener("click", () => duplicateItem(it.id));
 
-      // Drag & drop ordering (manual)
+      // Drag & drop ordering
       tr.addEventListener("dragstart", (e) => {
         e.dataTransfer.setData("text/plain", it.id);
         tr.style.opacity = "0.6";
       });
-      tr.addEventListener("dragend", () => {
-        tr.style.opacity = "";
-      });
+      tr.addEventListener("dragend", () => { tr.style.opacity = ""; });
       tr.addEventListener("dragover", (e) => {
         e.preventDefault();
         tr.style.outline = "2px solid rgba(122,162,255,.25)";
         tr.style.outlineOffset = "-2px";
       });
-      tr.addEventListener("dragleave", () => {
-        tr.style.outline = "";
-      });
+      tr.addEventListener("dragleave", () => { tr.style.outline = ""; });
       tr.addEventListener("drop", (e) => {
         e.preventDefault();
         tr.style.outline = "";
@@ -643,74 +805,29 @@
     updateKPIs();
   }
 
-  function escapeHtml(s){
-    return String(s ?? "")
-      .replaceAll("&","&amp;")
-      .replaceAll("<","&lt;")
-      .replaceAll(">","&gt;")
-      .replaceAll('"',"&quot;")
-      .replaceAll("'","&#039;");
-  }
-
-  function normalizeTime(val){
-    const s = String(val||"").trim();
-    if(!s) return "";
-    // accept "800" => "08:00" or "8:0" => "08:00"
-    if(/^\d{3,4}$/.test(s)){
-      const p = s.padStart(4,"0");
-      const hh = p.slice(0,2), mm = p.slice(2);
-      const h = Math.min(23, Math.max(0, parseInt(hh,10)));
-      const m = Math.min(59, Math.max(0, parseInt(mm,10)));
-      return `${pad2(h)}:${pad2(m)}`;
-    }
-    const m = s.match(/^(\d{1,2})\s*[:h]\s*(\d{1,2})$/i);
-    if(m){
-      const h = Math.min(23, Math.max(0, parseInt(m[1],10)));
-      const mi = Math.min(59, Math.max(0, parseInt(m[2],10)));
-      return `${pad2(h)}:${pad2(mi)}`;
-    }
-    // if already HH:MM
-    const ok = s.match(/^\d{1,2}:\d{2}$/);
-    if(ok){
-      const [hh,mm] = s.split(":");
-      const h = Math.min(23, Math.max(0, parseInt(hh,10)));
-      const mi = Math.min(59, Math.max(0, parseInt(mm,10)));
-      return `${pad2(h)}:${pad2(mi)}`;
-    }
-    return s;
-  }
-
-  function normalizeDuration(val){
-    const s = String(val||"").trim();
-    if(!s) return "";
-    // keep user's format but normalize common ones
-    const mins = parseDurationToMinutes(s);
-    if(mins > 0 && mins % 60 === 0) return String(mins); // "120"
-    if(mins > 0 && mins < 60) return String(mins); // "45"
-    if(mins > 0){
-      // store as "1h20"
-      const h = Math.floor(mins/60);
-      const m = mins%60;
-      if(m===0) return `${h}h`;
-      return `${h}h${pad2(m)}`;
-    }
-    return s;
-  }
-
-  // ---------- Actions ----------
   function addItem(prefill = {}){
     const items = state.days[currentDay()] || (state.days[currentDay()] = []);
     const maxOrder = items.length ? Math.max(...items.map(i=>i.order ?? 0)) : 0;
+
     const it = {
       id: uid(),
       done: false,
-      time: prefill.time || "",
+      start: prefill.start || "",
+      end: prefill.end || "",
       activity: prefill.activity || "",
       duration: prefill.duration || "",
       tag: prefill.tag || "Estudo",
       task: prefill.task || "",
       order: maxOrder + 1
     };
+
+    // auto-calc if possible
+    if(it.start && !it.end && parseDurationToMinutes(it.duration) > 0){
+      it.end = calcEndFromStartDur(it.start, it.duration);
+    }else if(it.start && it.end && parseDurationToMinutes(it.duration) <= 0){
+      syncDurationFromEnd(it);
+    }
+
     items.push(it);
     save();
     render();
@@ -722,7 +839,6 @@
     const idx = items.findIndex(x=>x.id===id);
     if(idx>=0){
       items.splice(idx,1);
-      // re-normalize orders
       items.forEach((x,i)=>x.order=i);
       save();
       render();
@@ -735,7 +851,8 @@
     const it = items.find(x=>x.id===id);
     if(!it) return;
     addItem({
-      time: it.time,
+      start: it.start,
+      end: it.end,
       activity: it.activity,
       duration: it.duration,
       tag: it.tag,
@@ -762,8 +879,8 @@
   function sortByTime(){
     const items = state.days[currentDay()] || [];
     items.sort((x,y)=>{
-      const tx = timeToMinutes(x.time);
-      const ty = timeToMinutes(y.time);
+      const tx = timeToMinutes(x.start) ?? 1e9;
+      const ty = timeToMinutes(y.start) ?? 1e9;
       if(tx !== ty) return tx - ty;
       return (x.order ?? 0) - (y.order ?? 0);
     });
@@ -775,7 +892,6 @@
 
   function resetModel(){
     const fresh = defaultData();
-    // keep current day selection, but reset all days
     state.days = fresh.days;
     save();
     render();
@@ -789,19 +905,26 @@
     showToast("Tudo apagado");
   }
 
-  // ---------- KPIs ----------
   function updateKPIs(){
     const dayItems = state.days[currentDay()] || [];
     const totalBlocks = dayItems.length;
     const done = dayItems.filter(x=>x.done).length;
-    const totalMinutes = dayItems.reduce((acc,x)=> acc + parseDurationToMinutes(x.duration), 0);
+
+    const totalMinutes = dayItems.reduce((acc,x)=> {
+      let mins = parseDurationToMinutes(x.duration);
+      if(mins <= 0){
+        const sMin = timeToMinutes(x.start);
+        const eMin = timeToMinutes(x.end);
+        if(sMin != null && eMin != null) mins = diffMinutes(sMin, eMin);
+      }
+      return acc + (mins > 0 ? mins : 0);
+    }, 0);
 
     $("#kpiBlocks").textContent = totalBlocks;
     $("#kpiDone").textContent = done;
     $("#kpiTime").textContent = minutesToHMM(totalMinutes);
   }
 
-  // ---------- Export / Import ----------
   function exportJSON(){
     const blob = new Blob([JSON.stringify(state, null, 2)], {type:"application/json"});
     const url = URL.createObjectURL(blob);
@@ -822,20 +945,28 @@
       try{
         const parsed = JSON.parse(reader.result);
         if(!parsed.days) throw new Error("JSON inválido: faltando 'days'");
-        // ensure all days exist
         for(const d of dayNames){
           if(!Array.isArray(parsed.days[d])) parsed.days[d] = [];
-          // ensure items have ids and order
           parsed.days[d] = parsed.days[d].map((it,i)=>({
             id: it.id || uid(),
             done: !!it.done,
-            time: it.time || "",
+            start: normalizeTime(it.start || it.time || ""),
+            end: normalizeTime(it.end || ""),
             activity: it.activity || "",
             duration: it.duration || "",
             tag: it.tag || "Estudo",
             task: it.task || "",
             order: (typeof it.order === "number") ? it.order : i
-          }));
+          })).map(it=>{
+            // auto-fill missing pieces
+            if(it.start && !it.end && parseDurationToMinutes(it.duration) > 0){
+              it.end = calcEndFromStartDur(it.start, it.duration);
+            }else if(it.start && it.end && parseDurationToMinutes(it.duration) <= 0){
+              syncDurationFromEnd(it);
+            }
+            it.duration = normalizeDuration(it.duration);
+            return it;
+          });
         }
         parsed.weekName = parsed.weekName || DEFAULT_WEEK;
         state = parsed;
@@ -850,14 +981,13 @@
     reader.readAsText(file);
   }
 
-  // ---------- Debounced save ----------
   let _saveTimer = null;
   function saveDebounced(){
     clearTimeout(_saveTimer);
     _saveTimer = setTimeout(() => save(), 180);
   }
 
-  // ---------- Wiring ----------
+  // Wiring
   $("#addBtn").addEventListener("click", ()=> addItem());
   $("#sortBtn").addEventListener("click", sortByTime);
   $("#resetBtn").addEventListener("click", () => {
@@ -871,13 +1001,10 @@
     }
   });
 
-  daySelect.addEventListener("change", ()=>{
-    render();
-    showToast("Dia alterado");
-  });
+  daySelect.addEventListener("change", ()=>{ render(); showToast("Dia alterado"); });
 
-  searchInput.addEventListener("input", render);
-  filterTag.addEventListener("change", render);
+  $("#search").addEventListener("input", render);
+  $("#filterTag").addEventListener("change", render);
 
   weekNameInput.addEventListener("input", ()=>{
     state.weekName = weekNameInput.value;
@@ -885,24 +1012,14 @@
   });
 
   $("#exportBtn").addEventListener("click", exportJSON);
-
   $("#importFile").addEventListener("change", (e)=>{
     const file = e.target.files?.[0];
     if(file) importJSON(file);
     e.target.value = "";
   });
 
-  // Keyboard: Enter on empty search focuses add
-  document.addEventListener("keydown", (e)=>{
-    if((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k"){
-      e.preventDefault();
-      searchInput.focus();
-    }
-  });
-
-  // ---------- First render ----------
+  // init
   render();
-
 })();
 </script>
 </body>
