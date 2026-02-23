@@ -1,40 +1,909 @@
-You are a senior front-end designer + engineer (UI/UX + product) and you will IMPROVE an existing web app from a GitHub repo using Bolt.
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Agenda — Planner Diário</title>
+  <style>
+    :root{
+      --bg:#0b0d10;
+      --panel:#12151b;
+      --panel2:#161a22;
+      --line:#232a36;
+      --text:#e8eef7;
+      --muted:#aab4c4;
+      --accent:#7aa2ff;
+      --good:#47d18c;
+      --warn:#ffcc66;
+      --bad:#ff6b6b;
+      --chip:#1b2330;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius:14px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      background: radial-gradient(1200px 700px at 10% 0%, rgba(122,162,255,.12), transparent 60%),
+                  radial-gradient(900px 600px at 100% 20%, rgba(71,209,140,.09), transparent 55%),
+                  var(--bg);
+      color:var(--text);
+      font-family:var(--sans);
+      padding:24px;
+    }
+    .wrap{max-width:1100px;margin:0 auto}
+    header{
+      display:flex;gap:14px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;
+      margin-bottom:16px;
+    }
+    .title{
+      display:flex;flex-direction:column;gap:6px;
+    }
+    h1{margin:0;font-size:20px;letter-spacing:.2px}
+    .sub{color:var(--muted);font-size:13px;line-height:1.35}
+    .pillrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+    .pill{
+      display:flex;align-items:center;gap:8px;
+      padding:8px 10px;border:1px solid var(--line);border-radius:999px;
+      background: rgba(255,255,255,.02);
+      color:var(--muted);font-size:12px;
+    }
+    .pill strong{color:var(--text);font-weight:600}
+    .toolbar{
+      display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:flex-end;
+    }
+    button, input, select{
+      font-family:inherit;
+    }
+    .btn{
+      border:1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      color:var(--text);
+      padding:10px 12px;border-radius:12px;
+      cursor:pointer;
+      box-shadow: none;
+      transition:.15s ease;
+      font-size:13px;
+    }
+    .btn:hover{border-color:#2f3a4d; transform: translateY(-1px)}
+    .btn:active{transform: translateY(0)}
+    .btn.primary{
+      border-color: rgba(122,162,255,.35);
+      background: linear-gradient(180deg, rgba(122,162,255,.18), rgba(122,162,255,.10));
+    }
+    .btn.danger{
+      border-color: rgba(255,107,107,.35);
+      background: linear-gradient(180deg, rgba(255,107,107,.16), rgba(255,107,107,.08));
+    }
+    .btn.ghost{
+      background: transparent;
+    }
+    .panel{
+      background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.015));
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
 
-TASK
-1) Open the GitHub repository at: <PASTE_GITHUB_URL_HERE>
-2) Run the project locally in Bolt, inspect the current UI/UX, and identify the biggest design/usability issues.
-3) Refactor the UI to look premium, modern, and “sellable” at first glance: clean layout, strong hierarchy, spacing, typography, and subtle animations.
-4) Keep ALL existing features working (editing blocks, add/remove, reorder, filters, localStorage, export/import). Do not remove functionality.
+    .controls{
+      padding:14px;
+      display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;
+      border-bottom:1px solid var(--line);
+      background: rgba(255,255,255,.02);
+    }
+    .leftControls{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .rightControls{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:flex-end}
+    .field{
+      display:flex;flex-direction:column;gap:6px;
+      padding:10px 12px;border:1px solid var(--line);border-radius:12px;
+      background: rgba(0,0,0,.15);
+      min-width: 180px;
+    }
+    .field label{font-size:11px;color:var(--muted)}
+    .field input,.field select{
+      border:0;outline:0;background:transparent;color:var(--text);
+      font-size:13px;
+    }
+    .field input::placeholder{color:#667189}
 
-DESIGN GOALS (non-negotiable)
-- Visual style: modern dark theme, minimal, premium, Notion-like clarity + slight Apple polish.
-- Improve “first impression”: hero header, clear title/subtitle, meaningful microcopy, cleaner controls.
-- Better table readability: zebra rows, sticky header, hover states, clearer input styles, better alignment, less clutter.
-- Add subtle motion: 150–250ms transitions, micro-interactions on buttons/rows (no heavy animations).
-- Accessibility: good contrast, large click targets, keyboard-friendly, focus states visible.
+    table{
+      width:100%;
+      border-collapse:separate;
+      border-spacing:0;
+    }
+    thead th{
+      text-align:left;
+      font-size:12px;
+      color:var(--muted);
+      font-weight:600;
+      padding:12px 12px;
+      border-bottom:1px solid var(--line);
+      background: rgba(0,0,0,.14);
+      position:sticky; top:0; z-index:2;
+      backdrop-filter: blur(8px);
+    }
+    tbody td{
+      padding:10px 12px;
+      border-bottom:1px solid rgba(35,42,54,.7);
+      vertical-align:middle;
+    }
+    tbody tr{
+      background: rgba(255,255,255,.01);
+      transition:.12s ease;
+    }
+    tbody tr:hover{
+      background: rgba(122,162,255,.06);
+    }
 
-INFORMATION ARCHITECTURE (what the user should understand instantly)
-- What day/week they are viewing
-- Total planned time, blocks count, completed count (KPIs)
-- A clean primary CTA: “Add block”
-- Secondary actions grouped (sort, export, import, reset/clear)
+    .col-check{width:44px}
+    .col-time{width:110px;font-family:var(--mono)}
+    .col-dur{width:120px}
+    .col-tag{width:140px}
+    .col-actions{width:190px;text-align:right}
+    .muted{color:var(--muted)}
+    .timeInput{
+      width:92px;
+      font-family:var(--mono);
+      border:1px solid var(--line);
+      border-radius:10px;
+      padding:8px 10px;
+      background: rgba(0,0,0,.18);
+      color:var(--text);
+      outline: none;
+    }
+    .textInput{
+      width:100%;
+      border:1px solid var(--line);
+      border-radius:10px;
+      padding:8px 10px;
+      background: rgba(0,0,0,.18);
+      color:var(--text);
+      outline:none;
+    }
+    .durInput{
+      width:92px;
+      border:1px solid var(--line);
+      border-radius:10px;
+      padding:8px 10px;
+      background: rgba(0,0,0,.18);
+      color:var(--text);
+      outline:none;
+    }
+    .chip{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:7px 10px;border-radius:999px;
+      border:1px solid var(--line);
+      background: rgba(0,0,0,.16);
+      font-size:12px;
+      color:var(--text);
+      white-space:nowrap;
+    }
+    .dot{width:9px;height:9px;border-radius:999px;background:var(--accent)}
+    .dot.study{background:var(--accent)}
+    .dot.fac{background:var(--warn)}
+    .dot.health{background:var(--good)}
+    .dot.life{background:#b38cff}
+    .dot.admin{background:#93c5fd}
+    .dot.rest{background:#9ca3af}
+    .rowBtns{display:inline-flex;gap:8px}
+    .mini{
+      padding:8px 10px;border-radius:10px;font-size:12px;
+    }
+    .drag{
+      cursor:grab;
+      display:inline-flex;align-items:center;gap:8px;
+      color:var(--muted);
+      font-family:var(--mono);
+      user-select:none;
+    }
+    .drag:active{cursor:grabbing}
+    .kpi{
+      display:flex;gap:10px;flex-wrap:wrap;align-items:center
+    }
+    .kpi .pill{background: rgba(0,0,0,.18)}
+    .footer{
+      padding:12px 14px;
+      display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;
+      background: rgba(0,0,0,.14);
+    }
+    .note{color:var(--muted);font-size:12px}
+    .toast{
+      position:fixed;left:50%;bottom:18px;transform:translateX(-50%);
+      background: rgba(18,21,27,.92);
+      border:1px solid var(--line);
+      padding:10px 12px;border-radius:999px;
+      color:var(--text);font-size:12px;
+      box-shadow: var(--shadow);
+      opacity:0;pointer-events:none;
+      transition:.2s ease;
+    }
+    .toast.show{opacity:1;bottom:22px}
+    .sr-only{
+      position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0;
+    }
+    @media (max-width: 820px){
+      body{padding:14px}
+      .col-actions{width:auto}
+      thead th.col-actions{display:none}
+      tbody td.col-actions{display:none}
+    }
+  </style>
+</head>
 
-IMPLEMENTATION REQUIREMENTS
-- Use only the existing stack in the repo (no big framework migrations).
-- You MAY add a small lightweight CSS system and utility classes, but keep it simple.
-- Ensure responsive layout: mobile should still be usable (table can become cards or horizontal scroll with good UX).
-- Keep localStorage schema compatible; if you must change it, write a migration that preserves existing data.
-- No broken behavior: drag/reorder must still work; editing must auto-save; import/export must work.
+<body>
+<div class="wrap">
+  <header>
+    <div class="title">
+      <h1>Agenda — Planner Diário</h1>
+      <div class="sub">
+        Edite, adicione e reorganize seus blocos. Tudo fica salvo automaticamente no seu navegador (localStorage).
+      </div>
+      <div class="pillrow kpi" id="kpiRow">
+        <div class="pill">Total de blocos: <strong id="kpiBlocks">0</strong></div>
+        <div class="pill">Tempo planejado: <strong id="kpiTime">0h00</strong></div>
+        <div class="pill">Concluídos: <strong id="kpiDone">0</strong></div>
+      </div>
+    </div>
 
-DELIVERABLES
-- Provide a short “before vs after” checklist of what you improved.
-- Commit-level changes: clean code, comments only where needed.
-- Update README with:
-  - how to run
-  - what changed
-  - screenshots section placeholder
+    <div class="toolbar">
+      <button class="btn primary" id="addBtn">+ Adicionar bloco</button>
+      <button class="btn" id="sortBtn" title="Ordenar por horário">Ordenar por horário</button>
+      <button class="btn" id="resetBtn" title="Voltar ao modelo inicial">Resetar modelo</button>
+      <button class="btn danger" id="clearBtn" title="Apagar tudo">Apagar tudo</button>
+    </div>
+  </header>
 
-QUALITY BAR
-Make it feel like a polished product, not a personal script. The UI must look coherent, aligned, and visually balanced. Avoid over-design. Make it faster to understand and easier to use.
+  <div class="panel">
+    <div class="controls">
+      <div class="leftControls">
+        <div class="field">
+          <label for="daySelect">Dia</label>
+          <select id="daySelect"></select>
+        </div>
+        <div class="field" style="min-width:240px">
+          <label for="search">Buscar</label>
+          <input id="search" placeholder="ex: TOEIC, Academia, Faculdade..." />
+        </div>
+        <div class="field" style="min-width:220px">
+          <label for="filterTag">Filtro por categoria</label>
+          <select id="filterTag">
+            <option value="">Todas</option>
+            <option value="Estudo">Estudo</option>
+            <option value="Faculdade">Faculdade</option>
+            <option value="Saúde">Saúde</option>
+            <option value="Vida">Vida</option>
+            <option value="Admin">Admin</option>
+            <option value="Descanso">Descanso</option>
+          </select>
+        </div>
+      </div>
 
-Now proceed: open the repo, analyze, and implement the improvements end-to-end.
+      <div class="rightControls">
+        <div class="field" style="min-width:180px">
+          <label for="weekName">Nome da semana</label>
+          <input id="weekName" placeholder="ex: Semana 1 (Março)" />
+        </div>
+        <button class="btn ghost" id="exportBtn">Exportar JSON</button>
+        <label class="btn ghost" for="importFile" style="cursor:pointer">Importar JSON</label>
+        <input id="importFile" type="file" accept="application/json" class="sr-only" />
+      </div>
+    </div>
+
+    <div style="max-height: 68vh; overflow:auto;">
+      <table>
+        <thead>
+          <tr>
+            <th class="col-check">✓</th>
+            <th class="col-time">Horário</th>
+            <th>Atividade</th>
+            <th class="col-dur">Duração</th>
+            <th class="col-tag">Categoria</th>
+            <th>Tarefa (detalhe)</th>
+            <th class="col-actions">Ações</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+
+    <div class="footer">
+      <div class="note">
+        Dica: arraste o ícone “⠿” para reordenar manualmente (ou use “Ordenar por horário”).
+      </div>
+      <div class="note">
+        ⌘/Ctrl + S não é necessário — tudo salva automaticamente.
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(() => {
+  const STORAGE_KEY = "agenda_planner_v1";
+  const DEFAULT_WEEK = "Minha Semana";
+
+  // ---------- Helpers ----------
+  const $ = (sel) => document.querySelector(sel);
+  const uid = () => Math.random().toString(16).slice(2) + Date.now().toString(16);
+
+  function showToast(msg){
+    const t = $("#toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    clearTimeout(showToast._timer);
+    showToast._timer = setTimeout(()=>t.classList.remove("show"), 1500);
+  }
+
+  function pad2(n){ return String(n).padStart(2, "0"); }
+
+  // "90" => 90 min; "1h20" => 80; "1:20" => 80; "45min" => 45
+  function parseDurationToMinutes(v){
+    if(!v) return 0;
+    const s = String(v).trim().toLowerCase();
+    if(!s) return 0;
+
+    // if just digits => minutes
+    if(/^\d+$/.test(s)) return parseInt(s,10);
+
+    // 1h20 / 1h / 2h05
+    let m = s.match(/^(\d+)\s*h\s*(\d+)?/);
+    if(m){
+      const h = parseInt(m[1],10);
+      const min = m[2] ? parseInt(m[2],10) : 0;
+      return h*60 + min;
+    }
+
+    // 1:20
+    m = s.match(/^(\d+)\s*:\s*(\d+)$/);
+    if(m){
+      return parseInt(m[1],10)*60 + parseInt(m[2],10);
+    }
+
+    // 45min
+    m = s.match(/^(\d+)\s*min/);
+    if(m) return parseInt(m[1],10);
+
+    return 0;
+  }
+
+  function minutesToHMM(mins){
+    const h = Math.floor(mins/60);
+    const m = mins % 60;
+    return `${h}h${pad2(m)}`;
+  }
+
+  function timeToMinutes(t){
+    if(!t) return 0;
+    const s = String(t).trim();
+    const m = s.match(/^(\d{1,2}):(\d{2})$/);
+    if(!m) return 0;
+    return parseInt(m[1],10)*60 + parseInt(m[2],10);
+  }
+
+  function minutesToTime(mins){
+    const h = Math.floor(mins/60) % 24;
+    const m = mins % 60;
+    return `${pad2(h)}:${pad2(m)}`;
+  }
+
+  function tagDotClass(tag){
+    switch(tag){
+      case "Estudo": return "study";
+      case "Faculdade": return "fac";
+      case "Saúde": return "health";
+      case "Vida": return "life";
+      case "Admin": return "admin";
+      case "Descanso": return "rest";
+      default: return "study";
+    }
+  }
+
+  // ---------- Data model ----------
+  // data = { weekName, days: { "Segunda": [items], ... } }
+  // item = {id, done, time, activity, duration, tag, task, order}
+  const dayNames = ["Segunda","Terça","Quarta","Quinta","Sexta","Sábado","Domingo"];
+
+  function defaultData(){
+    // Modelo inspirado na sua imagem (editável)
+    const base = [
+      {time:"06:00", activity:"Acordar", duration:"", tag:"Vida", task:"", done:false},
+      {time:"06:25", activity:"Bíblia", duration:"15", tag:"Vida", task:"", done:false},
+      {time:"07:20", activity:"Café da Manhã", duration:"60", tag:"Vida", task:"", done:false},
+      {time:"08:00", activity:"Faculdade", duration:"600", tag:"Faculdade", task:"Aulas / campus", done:false},
+      {time:"18:00", activity:"Retorno Faculdade", duration:"", tag:"Vida", task:"", done:false},
+      {time:"18:40", activity:"Lanche Tarde", duration:"30", tag:"Vida", task:"", done:false},
+      {time:"19:00", activity:"Academia", duration:"60", tag:"Saúde", task:"Treino", done:false},
+      {time:"20:00", activity:"Retorno Academia", duration:"", tag:"Vida", task:"", done:false},
+      {time:"21:00", activity:"Janta e Banho", duration:"60", tag:"Vida", task:"", done:false},
+      {time:"21:10", activity:"Inglês", duration:"120", tag:"Estudo", task:"TOEIC / inglês aula", done:false},
+      {time:"23:10", activity:"Término", duration:"25", tag:"Descanso", task:"Desacelerar + dormir", done:false},
+    ];
+
+    const mk = (arr) => arr.map((x,i)=>({
+      id: uid(),
+      done: !!x.done,
+      time: x.time || "",
+      activity: x.activity || "",
+      duration: x.duration || "",
+      tag: x.tag || "Estudo",
+      task: x.task || "",
+      order: i
+    }));
+
+    const days = {};
+    for(const d of dayNames){
+      days[d] = mk(base);
+    }
+    return { weekName: DEFAULT_WEEK, days };
+  }
+
+  function load(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(!raw) return defaultData();
+      const parsed = JSON.parse(raw);
+
+      // basic sanity
+      if(!parsed.days) return defaultData();
+      for(const d of dayNames){
+        if(!Array.isArray(parsed.days[d])) parsed.days[d] = [];
+      }
+      parsed.weekName = parsed.weekName || DEFAULT_WEEK;
+      return parsed;
+    }catch(e){
+      return defaultData();
+    }
+  }
+
+  function save(){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    updateKPIs();
+  }
+
+  let state = load();
+
+  // ---------- UI init ----------
+  const daySelect = $("#daySelect");
+  const weekNameInput = $("#weekName");
+  const tbody = $("#tbody");
+  const searchInput = $("#search");
+  const filterTag = $("#filterTag");
+
+  dayNames.forEach(d=>{
+    const opt = document.createElement("option");
+    opt.value = d; opt.textContent = d;
+    daySelect.appendChild(opt);
+  });
+
+  // pick today-ish (Mon=1...Sun=0 in JS getDay)
+  const jsDay = new Date().getDay();
+  const map = {0:"Domingo",1:"Segunda",2:"Terça",3:"Quarta",4:"Quinta",5:"Sexta",6:"Sábado"};
+  daySelect.value = map[jsDay] || "Segunda";
+
+  weekNameInput.value = state.weekName || DEFAULT_WEEK;
+
+  // ---------- Rendering ----------
+  function currentDay(){
+    return daySelect.value;
+  }
+
+  function getVisibleItems(){
+    const items = state.days[currentDay()] || [];
+    const q = searchInput.value.trim().toLowerCase();
+    const tag = filterTag.value;
+
+    // stable ordering by item.order (manual), then time
+    let sorted = [...items].sort((a,b)=> (a.order ?? 0) - (b.order ?? 0));
+
+    if(q){
+      sorted = sorted.filter(it =>
+        (it.activity||"").toLowerCase().includes(q) ||
+        (it.task||"").toLowerCase().includes(q) ||
+        (it.time||"").toLowerCase().includes(q) ||
+        (it.tag||"").toLowerCase().includes(q)
+      );
+    }
+    if(tag){
+      sorted = sorted.filter(it => it.tag === tag);
+    }
+    return sorted;
+  }
+
+  function render(){
+    const items = getVisibleItems();
+    tbody.innerHTML = "";
+
+    items.forEach((it, idx) => {
+      const tr = document.createElement("tr");
+      tr.draggable = true;
+      tr.dataset.id = it.id;
+
+      tr.innerHTML = `
+        <td class="col-check">
+          <input type="checkbox" ${it.done ? "checked": ""} aria-label="Concluir"/>
+        </td>
+
+        <td class="col-time">
+          <div style="display:flex;align-items:center;gap:10px">
+            <span class="drag" title="Arraste para reordenar">⠿</span>
+            <input class="timeInput" type="text" inputmode="numeric" placeholder="08:00" value="${escapeHtml(it.time)}" />
+          </div>
+        </td>
+
+        <td>
+          <input class="textInput" type="text" placeholder="Ex: Academia / TOEIC / Faculdade..." value="${escapeHtml(it.activity)}" />
+        </td>
+
+        <td class="col-dur">
+          <input class="durInput" type="text" placeholder="ex: 60 / 1h20" value="${escapeHtml(it.duration)}" />
+        </td>
+
+        <td class="col-tag">
+          <div class="chip" title="Categoria do bloco">
+            <span class="dot ${tagDotClass(it.tag)}"></span>
+            <select class="tagSelect" style="border:0;outline:0;background:transparent;color:var(--text);font-size:12px;cursor:pointer">
+              ${["Estudo","Faculdade","Saúde","Vida","Admin","Descanso"].map(t=>`<option value="${t}" ${it.tag===t?"selected":""}>${t}</option>`).join("")}
+            </select>
+          </div>
+        </td>
+
+        <td>
+          <input class="textInput taskInput" type="text" placeholder="Detalhe: o que exatamente fazer" value="${escapeHtml(it.task)}" />
+        </td>
+
+        <td class="col-actions">
+          <div class="rowBtns">
+            <button class="btn mini" data-act="dup" title="Duplicar">Duplicar</button>
+            <button class="btn mini danger" data-act="del" title="Excluir">Excluir</button>
+          </div>
+        </td>
+      `;
+
+      // Events
+      const checkbox = tr.querySelector('input[type="checkbox"]');
+      const timeInput = tr.querySelector(".timeInput");
+      const actInput = tr.querySelectorAll(".textInput")[0];
+      const durInput = tr.querySelector(".durInput");
+      const tagSelectEl = tr.querySelector(".tagSelect");
+      const taskInput = tr.querySelector(".taskInput");
+
+      checkbox.addEventListener("change", () => {
+        it.done = checkbox.checked;
+        save();
+        render(); // to update KPIs quickly
+      });
+
+      timeInput.addEventListener("change", () => {
+        it.time = normalizeTime(timeInput.value);
+        timeInput.value = it.time;
+        save();
+      });
+
+      actInput.addEventListener("input", () => {
+        it.activity = actInput.value;
+        saveDebounced();
+      });
+
+      durInput.addEventListener("change", () => {
+        it.duration = normalizeDuration(durInput.value);
+        durInput.value = it.duration;
+        save();
+        updateKPIs();
+      });
+
+      tagSelectEl.addEventListener("change", () => {
+        it.tag = tagSelectEl.value;
+        save();
+        render();
+      });
+
+      taskInput.addEventListener("input", () => {
+        it.task = taskInput.value;
+        saveDebounced();
+      });
+
+      tr.querySelector('[data-act="del"]').addEventListener("click", () => {
+        deleteItem(it.id);
+      });
+      tr.querySelector('[data-act="dup"]').addEventListener("click", () => {
+        duplicateItem(it.id);
+      });
+
+      // Drag & drop ordering (manual)
+      tr.addEventListener("dragstart", (e) => {
+        e.dataTransfer.setData("text/plain", it.id);
+        tr.style.opacity = "0.6";
+      });
+      tr.addEventListener("dragend", () => {
+        tr.style.opacity = "";
+      });
+      tr.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        tr.style.outline = "2px solid rgba(122,162,255,.25)";
+        tr.style.outlineOffset = "-2px";
+      });
+      tr.addEventListener("dragleave", () => {
+        tr.style.outline = "";
+      });
+      tr.addEventListener("drop", (e) => {
+        e.preventDefault();
+        tr.style.outline = "";
+        const draggedId = e.dataTransfer.getData("text/plain");
+        if(!draggedId || draggedId === it.id) return;
+        reorder(draggedId, it.id);
+      });
+
+      tbody.appendChild(tr);
+    });
+
+    updateKPIs();
+  }
+
+  function escapeHtml(s){
+    return String(s ?? "")
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;")
+      .replaceAll("'","&#039;");
+  }
+
+  function normalizeTime(val){
+    const s = String(val||"").trim();
+    if(!s) return "";
+    // accept "800" => "08:00" or "8:0" => "08:00"
+    if(/^\d{3,4}$/.test(s)){
+      const p = s.padStart(4,"0");
+      const hh = p.slice(0,2), mm = p.slice(2);
+      const h = Math.min(23, Math.max(0, parseInt(hh,10)));
+      const m = Math.min(59, Math.max(0, parseInt(mm,10)));
+      return `${pad2(h)}:${pad2(m)}`;
+    }
+    const m = s.match(/^(\d{1,2})\s*[:h]\s*(\d{1,2})$/i);
+    if(m){
+      const h = Math.min(23, Math.max(0, parseInt(m[1],10)));
+      const mi = Math.min(59, Math.max(0, parseInt(m[2],10)));
+      return `${pad2(h)}:${pad2(mi)}`;
+    }
+    // if already HH:MM
+    const ok = s.match(/^\d{1,2}:\d{2}$/);
+    if(ok){
+      const [hh,mm] = s.split(":");
+      const h = Math.min(23, Math.max(0, parseInt(hh,10)));
+      const mi = Math.min(59, Math.max(0, parseInt(mm,10)));
+      return `${pad2(h)}:${pad2(mi)}`;
+    }
+    return s;
+  }
+
+  function normalizeDuration(val){
+    const s = String(val||"").trim();
+    if(!s) return "";
+    // keep user's format but normalize common ones
+    const mins = parseDurationToMinutes(s);
+    if(mins > 0 && mins % 60 === 0) return String(mins); // "120"
+    if(mins > 0 && mins < 60) return String(mins); // "45"
+    if(mins > 0){
+      // store as "1h20"
+      const h = Math.floor(mins/60);
+      const m = mins%60;
+      if(m===0) return `${h}h`;
+      return `${h}h${pad2(m)}`;
+    }
+    return s;
+  }
+
+  // ---------- Actions ----------
+  function addItem(prefill = {}){
+    const items = state.days[currentDay()] || (state.days[currentDay()] = []);
+    const maxOrder = items.length ? Math.max(...items.map(i=>i.order ?? 0)) : 0;
+    const it = {
+      id: uid(),
+      done: false,
+      time: prefill.time || "",
+      activity: prefill.activity || "",
+      duration: prefill.duration || "",
+      tag: prefill.tag || "Estudo",
+      task: prefill.task || "",
+      order: maxOrder + 1
+    };
+    items.push(it);
+    save();
+    render();
+    showToast("Bloco adicionado");
+  }
+
+  function deleteItem(id){
+    const items = state.days[currentDay()] || [];
+    const idx = items.findIndex(x=>x.id===id);
+    if(idx>=0){
+      items.splice(idx,1);
+      // re-normalize orders
+      items.forEach((x,i)=>x.order=i);
+      save();
+      render();
+      showToast("Bloco removido");
+    }
+  }
+
+  function duplicateItem(id){
+    const items = state.days[currentDay()] || [];
+    const it = items.find(x=>x.id===id);
+    if(!it) return;
+    addItem({
+      time: it.time,
+      activity: it.activity,
+      duration: it.duration,
+      tag: it.tag,
+      task: it.task
+    });
+    showToast("Bloco duplicado");
+  }
+
+  function reorder(draggedId, targetId){
+    const items = state.days[currentDay()] || [];
+    const a = items.findIndex(x=>x.id===draggedId);
+    const b = items.findIndex(x=>x.id===targetId);
+    if(a<0 || b<0) return;
+
+    const [moved] = items.splice(a,1);
+    items.splice(b,0,moved);
+
+    items.forEach((x,i)=>x.order=i);
+    save();
+    render();
+    showToast("Reordenado");
+  }
+
+  function sortByTime(){
+    const items = state.days[currentDay()] || [];
+    items.sort((x,y)=>{
+      const tx = timeToMinutes(x.time);
+      const ty = timeToMinutes(y.time);
+      if(tx !== ty) return tx - ty;
+      return (x.order ?? 0) - (y.order ?? 0);
+    });
+    items.forEach((x,i)=>x.order=i);
+    save();
+    render();
+    showToast("Ordenado por horário");
+  }
+
+  function resetModel(){
+    const fresh = defaultData();
+    // keep current day selection, but reset all days
+    state.days = fresh.days;
+    save();
+    render();
+    showToast("Modelo resetado");
+  }
+
+  function clearAll(){
+    for(const d of dayNames) state.days[d] = [];
+    save();
+    render();
+    showToast("Tudo apagado");
+  }
+
+  // ---------- KPIs ----------
+  function updateKPIs(){
+    const dayItems = state.days[currentDay()] || [];
+    const totalBlocks = dayItems.length;
+    const done = dayItems.filter(x=>x.done).length;
+    const totalMinutes = dayItems.reduce((acc,x)=> acc + parseDurationToMinutes(x.duration), 0);
+
+    $("#kpiBlocks").textContent = totalBlocks;
+    $("#kpiDone").textContent = done;
+    $("#kpiTime").textContent = minutesToHMM(totalMinutes);
+  }
+
+  // ---------- Export / Import ----------
+  function exportJSON(){
+    const blob = new Blob([JSON.stringify(state, null, 2)], {type:"application/json"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    const name = (state.weekName || "agenda").replace(/[^\w\- ]+/g,"").trim().replaceAll(" ","_");
+    a.download = `${name || "agenda"}_export.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    showToast("Exportado");
+  }
+
+  function importJSON(file){
+    const reader = new FileReader();
+    reader.onload = () => {
+      try{
+        const parsed = JSON.parse(reader.result);
+        if(!parsed.days) throw new Error("JSON inválido: faltando 'days'");
+        // ensure all days exist
+        for(const d of dayNames){
+          if(!Array.isArray(parsed.days[d])) parsed.days[d] = [];
+          // ensure items have ids and order
+          parsed.days[d] = parsed.days[d].map((it,i)=>({
+            id: it.id || uid(),
+            done: !!it.done,
+            time: it.time || "",
+            activity: it.activity || "",
+            duration: it.duration || "",
+            tag: it.tag || "Estudo",
+            task: it.task || "",
+            order: (typeof it.order === "number") ? it.order : i
+          }));
+        }
+        parsed.weekName = parsed.weekName || DEFAULT_WEEK;
+        state = parsed;
+        weekNameInput.value = state.weekName;
+        save();
+        render();
+        showToast("Importado");
+      }catch(e){
+        alert("Falha ao importar: " + e.message);
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  // ---------- Debounced save ----------
+  let _saveTimer = null;
+  function saveDebounced(){
+    clearTimeout(_saveTimer);
+    _saveTimer = setTimeout(() => save(), 180);
+  }
+
+  // ---------- Wiring ----------
+  $("#addBtn").addEventListener("click", ()=> addItem());
+  $("#sortBtn").addEventListener("click", sortByTime);
+  $("#resetBtn").addEventListener("click", () => {
+    if(confirm("Resetar para o modelo inicial? (Isso substitui a semana atual)")){
+      resetModel();
+    }
+  });
+  $("#clearBtn").addEventListener("click", () => {
+    if(confirm("Apagar tudo da semana inteira?")){
+      clearAll();
+    }
+  });
+
+  daySelect.addEventListener("change", ()=>{
+    render();
+    showToast("Dia alterado");
+  });
+
+  searchInput.addEventListener("input", render);
+  filterTag.addEventListener("change", render);
+
+  weekNameInput.addEventListener("input", ()=>{
+    state.weekName = weekNameInput.value;
+    saveDebounced();
+  });
+
+  $("#exportBtn").addEventListener("click", exportJSON);
+
+  $("#importFile").addEventListener("change", (e)=>{
+    const file = e.target.files?.[0];
+    if(file) importJSON(file);
+    e.target.value = "";
+  });
+
+  // Keyboard: Enter on empty search focuses add
+  document.addEventListener("keydown", (e)=>{
+    if((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k"){
+      e.preventDefault();
+      searchInput.focus();
+    }
+  });
+
+  // ---------- First render ----------
+  render();
+
+})();
+</script>
+</body>
+</html>
