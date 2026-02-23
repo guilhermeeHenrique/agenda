@@ -1,0 +1,40 @@
+You are a senior front-end designer + engineer (UI/UX + product) and you will IMPROVE an existing web app from a GitHub repo using Bolt.
+
+TASK
+1) Open the GitHub repository at: <PASTE_GITHUB_URL_HERE>
+2) Run the project locally in Bolt, inspect the current UI/UX, and identify the biggest design/usability issues.
+3) Refactor the UI to look premium, modern, and “sellable” at first glance: clean layout, strong hierarchy, spacing, typography, and subtle animations.
+4) Keep ALL existing features working (editing blocks, add/remove, reorder, filters, localStorage, export/import). Do not remove functionality.
+
+DESIGN GOALS (non-negotiable)
+- Visual style: modern dark theme, minimal, premium, Notion-like clarity + slight Apple polish.
+- Improve “first impression”: hero header, clear title/subtitle, meaningful microcopy, cleaner controls.
+- Better table readability: zebra rows, sticky header, hover states, clearer input styles, better alignment, less clutter.
+- Add subtle motion: 150–250ms transitions, micro-interactions on buttons/rows (no heavy animations).
+- Accessibility: good contrast, large click targets, keyboard-friendly, focus states visible.
+
+INFORMATION ARCHITECTURE (what the user should understand instantly)
+- What day/week they are viewing
+- Total planned time, blocks count, completed count (KPIs)
+- A clean primary CTA: “Add block”
+- Secondary actions grouped (sort, export, import, reset/clear)
+
+IMPLEMENTATION REQUIREMENTS
+- Use only the existing stack in the repo (no big framework migrations).
+- You MAY add a small lightweight CSS system and utility classes, but keep it simple.
+- Ensure responsive layout: mobile should still be usable (table can become cards or horizontal scroll with good UX).
+- Keep localStorage schema compatible; if you must change it, write a migration that preserves existing data.
+- No broken behavior: drag/reorder must still work; editing must auto-save; import/export must work.
+
+DELIVERABLES
+- Provide a short “before vs after” checklist of what you improved.
+- Commit-level changes: clean code, comments only where needed.
+- Update README with:
+  - how to run
+  - what changed
+  - screenshots section placeholder
+
+QUALITY BAR
+Make it feel like a polished product, not a personal script. The UI must look coherent, aligned, and visually balanced. Avoid over-design. Make it faster to understand and easier to use.
+
+Now proceed: open the repo, analyze, and implement the improvements end-to-end.
