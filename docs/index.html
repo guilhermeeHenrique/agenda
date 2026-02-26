@@ -1240,11 +1240,11 @@
           return;
         }
         if(act === "delTask"){
-          const parent = e.target.closest(".checklist-item");
-          if(parent){
-            const cid = parent.getAttribute("data-cid");
-            deleteTask(it.id, cid);
-          }
+  const parent = e.target.closest(".checklist-item");
+  if(parent){
+    const cid = parent.getAttribute("data-cid");
+    deleteTask(it.id, cid);
+  }
         }
       });
 
@@ -1256,7 +1256,23 @@
         cb.addEventListener("change", ()=>{
           toggleTaskDone(it.id, cid, cb.checked);
         });
+text.addEventListener("keydown", (ev) => {
+  if(ev.key === "Enter"){
+    ev.preventDefault();
 
+    // cria uma nova tarefa logo abaixo da atual
+    addTaskAfter(it.id, cid);
+
+    // re-render e foca automaticamente na próxima linha
+    render();
+    requestAnimationFrame(() => {
+      const row = tbody.querySelector(`tr[data-id="${it.id}"]`);
+      const next = row?.querySelector(`.checklist-item[data-cid="${cid}"]`)?.nextElementSibling;
+      const nextInput = next?.querySelector('input[type="text"]');
+      nextInput?.focus();
+    });
+  }
+});
         text.addEventListener("input", ()=>{
           updateTaskText(it.id, cid, text.value);
         });
@@ -1413,11 +1429,29 @@
     save();
     render();
   }
+  function addTaskAfter(itemId, afterTaskId){
+  const it = findItem(currentDay(), itemId);
+  if(!it) return;
+
+  it.checklist = Array.isArray(it.checklist) ? it.checklist : [];
+  const idx = it.checklist.findIndex(t => t.id === afterTaskId);
+
+  const newTask = { id: uid(), done:false, text:"" };
+
+  if(idx < 0){
+    it.checklist.push(newTask);
+  }else{
+    it.checklist.splice(idx + 1, 0, newTask);
+  }
+
+  saveDebounced();
+}
   function deleteTask(itemId, taskId){
-    const it = findItem(currentDay(), itemId);
-    if(!it || !Array.isArray(it.checklist)) return;
-    it.checklist = it.checklist.filter(t=>t.id!==taskId);
+  const it = findItem(currentDay(), itemId);
+  if(!it || !Array.isArray(it.checklist)) return;
+  it.checklist = it.checklist.filter(t => t.id !== taskId);
     saveDebounced();
+    render();
   }
   function clearDoneTasks(itemId){
     const it = findItem(currentDay(), itemId);
